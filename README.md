@@ -1,4 +1,4 @@
-# ocpop 󱙺
+# ocpop
 
 Waybar widget for [opencode](https://opencode.ai) sessions: watch what the
 agents are doing and hop straight back into any of them.
@@ -13,11 +13,11 @@ combines two things:
 - **Session list** — sessions touched since the last boot, monospace for
   alignment, state shown as a colored dot:
 
-| Glyph | Color | State   | Meaning                                      |
-| ----- | ----- | ------- | -------------------------------------------- |
-| ●     | green | running | agent is working (pending turn / no done)    |
-| ●     | pink  | waiting | needs your input (permission or fresh reply) |
-| ●     | white | idle    | untouched for a while                        |
+| Color | State   | Meaning                                      |
+| ----- | ------- | -------------------------------------------- |
+| green | running | agent is working (pending turn / no done)    |
+| pink  | waiting | needs your input (permission or fresh reply) |
+| white | idle    | untouched for a while                        |
 
 **`ocpop pick`** — the click action. A fuzzel menu of sessions with the same
 state icons; picking one focuses the terminal window already running that
