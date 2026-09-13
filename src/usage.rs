@@ -143,8 +143,9 @@ fn fmt_window(label: &str, win: &Window, dur_secs: f64) -> String {
         .unwrap_or(0.0);
 
     // fixed columns → aligned in a <tt> block
+    let padded_label = format!("{label:<3}");
     format!(
-        "<b>{label}</b> <span color=\"{color}\">{pct:>4}% {bar} {left:>7}</span>",
+        "<b>{padded_label}</b> <span color=\"{color}\">{pct:>4}% {bar} {left:>7}</span>",
         color = bar_color(pct, remaining, dur_secs),
         bar = braille_bar::BrailleBar::new(10).render(pct),
         left = remaining_str(remaining),
