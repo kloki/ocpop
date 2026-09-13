@@ -9,7 +9,6 @@ agents are doing and hop straight back into any of them.
 combines two things:
 
 - **OpenCode Go usage** — 5h / 7d / 30d pace bars rendered with
-  [braille-bar](https://github.com/kloki/braille-bar), with reset countdowns
   (refetched at most every 60s, cached in `/tmp/ocpop-usage.json`)
 - **Session list** — sessions touched since the last boot, monospace for
   alignment, state shown as a colored dot:
@@ -45,6 +44,8 @@ cargo install --path .
   "on-click": "~/.cargo/bin/ocpop pick",
 },
 ```
+
+Optional styling
 
 ```css
 #custom-ocpop.oc-waiting {
