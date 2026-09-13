@@ -99,3 +99,25 @@ fn html_escape(s: &str) -> String {
         .replace('<', "&lt;")
         .replace('>', "&gt;")
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn html_escape_escapes_specials() {
+        assert_eq!(html_escape("a & b"), "a &amp; b");
+        assert_eq!(html_escape("<b>"), "&lt;b&gt;");
+        assert_eq!(html_escape("&<>"), "&amp;&lt;&gt;");
+    }
+
+    #[test]
+    fn html_escape_leaves_plain_text() {
+        assert_eq!(html_escape("plain text"), "plain text");
+    }
+
+    #[test]
+    fn icon_is_robot_glyph() {
+        assert_eq!(icon(), "󰚩");
+    }
+}

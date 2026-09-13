@@ -170,3 +170,87 @@ fn remaining_str(remaining: f64) -> String {
         _ => format!("{}m", s / 60),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn window(percent: Option<f64>) -> Window {
+        Window {
+            percent,
+            resets_at: None,
+        }
+    }
+
+    #[test]
+    fn bar_color_red_when_over_elapsed() {
+        assert_eq!(bar_color(100.0, 10.0, 100.0), "#ff5555");
+    }
+
+    #[test]
+    fn bar_color_cyan_when_under_elapsed() {
+        assert_eq!(bar_color(80.0, 0.0, 100.0), "#8be9fd");
+    }
+
+    #[test]
+    fn bar_color_green_on_pace() {
+        assert_eq!(bar_color(70.0, 30.0, 100.0), "#50fa7b");
+    }
+
+    #[test]
+    fn remaining_str_formats() {
+        assert_eq!(remaining_str(0.0), "now");
+        assert_eq!(remaining_str(59.0), "0m");
+        assert_eq!(remaining_str(90.0), "1m");
+        assert_eq!(remaining_str(3_600.0), "1h 0m");
+        assert_eq!(remaining_str(5_400.0), "1h 30m");
+        assert_eq!(remaining_str(86_400.0), "1d 0h");
+        assert_eq!(remaining_str(90_000.0), "1d 1h");
+    }
+
+    #[test]
+    fn fmt_window_na_when_no_percent() {
+        let out = fmt_window("5h", &window(None), 18_000.0);
+        assert!(out.contains("n/a"));
+    }
+
+    #[test]
+    fn fmt_window_renders_percent() {
+        let out = fmt_window("30d", &window(Some(80.0)), 2_592_000.0);
+        assert!(out.contains("<b>30d</b>"));
+        assert!(out.contains("80%"));
+        assert!(out.contains("now"));
+    }
+
+    #[test]
+    fn fmt_window_clamps_percent() {
+        let out = fmt_window("7d", &window(Some(150.0)), 604_800.0);
+        assert!(out.contains("100%"));
+    }
+
+    #[test]
+    fn parse_accepts_valid_body() {
+        let body = r#"{"usage":{"monthly":{"percent":12.5},"weekly":{"percent":null},"rolling":{"percent":3.1}}}"#;
+        assert!(parse(body).is_some());
+    }
+
+    #[test]
+    fn parse_rejects_garbage() {
+        assert!(parse("not json").is_none());
+        assert!(parse(r#"{"usage":{}}"#).is_none());
+    }
+
+    #[test]
+    fn render_contains_all_windows() {
+        let u = Usage {
+            monthly: window(Some(50.0)),
+            weekly: window(Some(50.0)),
+            rolling: window(Some(50.0)),
+        };
+        let out = render(&u);
+        assert!(out.contains("OpenCode Go"));
+        assert!(out.contains("5h"));
+        assert!(out.contains("7d"));
+        assert!(out.contains("30d"));
+    }
+}

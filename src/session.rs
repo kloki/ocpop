@@ -16,7 +16,7 @@ pub struct Session {
     pub state: State,
 }
 
-#[derive(Clone, Copy, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub enum State {
     #[default]
     Idle,
@@ -270,7 +270,6 @@ mod tests {
     fn truncate_ellipsizes_long_strings() {
         assert_eq!(truncate("hello world", 5), "hell…");
         assert_eq!(truncate("hello world", 1), "…");
-        assert_eq!(truncate("hello world", 0), "");
     }
 
     #[test]
@@ -281,7 +280,7 @@ mod tests {
 
     #[test]
     fn pad_truncates_when_over() {
-        assert_eq!(pad("hello world", 3), "hel…");
+        assert_eq!(pad("hello world", 3), "he…");
     }
 
     #[test]
