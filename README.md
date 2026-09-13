@@ -18,7 +18,7 @@ combines two things:
 |-------|------------------|---------|------------------------------------------------|
 | ●     | green            | running | agent is working (pending turn / no done)      |
 | ●     | pink             | waiting | needs your input (permission or fresh reply)   |
-| ○     | muted            | idle    | untouched for a while                          |
+| ●     | white            | idle    | untouched for a while                          |
 
 **`ocpop pick`** — the click action. A fuzzel menu of sessions with the same
 state icons; picking one focuses the terminal window already running that

@@ -27,17 +27,14 @@ pub enum State {
 impl State {
     /// same glyph for every state → columns stay aligned; color carries meaning
     pub fn glyph(self) -> &'static str {
-        match self {
-            State::Idle => "○",
-            _ => "●",
-        }
+        "●"
     }
 
     pub fn color(self) -> &'static str {
         match self {
             State::Running => "#50fa7b",
             State::Waiting => "#ff79c6",
-            State::Idle => "#6272a4",
+            State::Idle => "#ffffff",
         }
     }
 }
