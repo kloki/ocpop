@@ -17,12 +17,12 @@ pub fn run() -> anyhow::Result<()> {
         let u = crate::usage::status();
         let json = match u.tooltip {
             Some(tooltip) => json!({
-                "text": "󱙺",
+                "text": "󰚩",
                 "tooltip": tooltip,
                 "class": if u.error.is_some() { "error" } else { "normal" },
             }),
             None => json!({
-                "text": "󱙺?",
+                "text": "󰚩?",
                 "tooltip": u.error.unwrap_or_else(|| "usage unavailable".into()),
                 "class": "error",
             }),
@@ -48,7 +48,7 @@ pub fn run() -> anyhow::Result<()> {
     let mut tooltip = crate::usage::status();
     let usage_block = match (tooltip.tooltip.take(), tooltip.error.take()) {
         (Some(html), _) => format!("{html}\n"),
-        (None, Some(err)) => format!("<span color=\"#ff5555\">󱙺 {err}</span>\n"),
+        (None, Some(err)) => format!("<span color=\"#ff5555\">󰚩 {err}</span>\n"),
         (None, None) => String::new(),
     };
 
@@ -81,7 +81,7 @@ pub fn run() -> anyhow::Result<()> {
         .join("\n");
 
     let json = json!({
-        "text": format!("{} {}", icon(&sessions), sessions.len()),
+        "text": format!("{} {}", icon(), sessions.len()),
         "tooltip": format!("<tt>{usage_block}{list}</tt>"),
         "class": class,
     });
@@ -89,12 +89,9 @@ pub fn run() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn icon(sessions: &[session::Session]) -> &'static str {
-    if sessions.iter().any(|s| s.state == State::Waiting) {
-        "󰚌"
-    } else {
-        "󱙺"
-    }
+/// robot (nf-md-robot — U+F06A9); state shows via color/classes, never the icon
+fn icon() -> &'static str {
+    "󰚩"
 }
 
 fn html_escape(s: &str) -> String {

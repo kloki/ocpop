@@ -14,11 +14,11 @@ combines two things:
 - **Session list** — sessions touched since the last boot, monospace for
   alignment, state shown as a colored dot:
 
-| Glyph | Color            | State   | Meaning                                        |
-|-------|------------------|---------|------------------------------------------------|
-| ●     | green            | running | agent is working (pending turn / no done)      |
-| ●     | pink             | waiting | needs your input (permission or fresh reply)   |
-| ●     | white            | idle    | untouched for a while                          |
+| Glyph | Color | State   | Meaning                                      |
+| ----- | ----- | ------- | -------------------------------------------- |
+| ●     | green | running | agent is working (pending turn / no done)    |
+| ●     | pink  | waiting | needs your input (permission or fresh reply) |
+| ●     | white | idle    | untouched for a while                        |
 
 **`ocpop pick`** — the click action. A fuzzel menu of sessions with the same
 state icons; picking one focuses the terminal window already running that
@@ -46,12 +46,16 @@ cargo install --path .
 },
 ```
 
-Optional styling (Dracula-ish palette in `colors.css`):
-
 ```css
-#custom-ocpop.oc-waiting  { color: @pink; }
-#custom-ocpop.oc-running  { color: @green; }
-#custom-ocpop.error       { color: @red; }
+#custom-ocpop.oc-waiting {
+  color: @pink;
+}
+#custom-ocpop.oc-running {
+  color: @green;
+}
+#custom-ocpop.error {
+  color: @red;
+}
 ```
 
 ## Debug
