@@ -27,8 +27,8 @@ struct Window {
 
 #[derive(Deserialize)]
 struct Auth {
-    #[serde(rename = "opencode-go")]
-    go: AuthEntry,
+    #[serde(rename = "opencode-go", default)]
+    go: Option<AuthEntry>,
 }
 
 #[derive(Deserialize)]
@@ -63,13 +63,36 @@ fn write_cache(body: &str) -> Result<()> {
     Ok(())
 }
 
+/// The `opencode-go` key from a parsed `auth.json`, if present and non-empty.
+fn key_from_auth(raw: &str) -> Option<String> {
+    serde_json::from_str::<Auth>(raw)
+        .ok()?
+        .go
+        .map(|entry| entry.key)
+        .filter(|key| !key.trim().is_empty())
+}
+
+/// The API key for the `opencode-go` provider: the `opencode-go` entry in
+/// `auth.json` first, then the `OPENCODE_API_KEY` (or `OPENCODE_GO_API_KEY`)
+/// environment variable.
+fn api_key() -> Option<String> {
+    let from_auth = std::env::var("HOME")
+        .ok()
+        .map(|home| format!("{home}/.local/share/opencode/auth.json"))
+        .and_then(|path| std::fs::read_to_string(path).ok())
+        .as_deref()
+        .and_then(key_from_auth);
+
+    from_auth.or_else(|| {
+        ["OPENCODE_API_KEY", "OPENCODE_GO_API_KEY"]
+            .into_iter()
+            .find_map(|name| std::env::var(name).ok())
+            .filter(|key| !key.trim().is_empty())
+    })
+}
+
 fn fetch() -> Option<String> {
-    let raw = std::fs::read_to_string(format!(
-        "{}/.local/share/opencode/auth.json",
-        std::env::var("HOME").ok()?
-    ))
-    .ok()?;
-    let key = serde_json::from_str::<Auth>(&raw).ok()?.go.key;
+    let key = api_key()?;
 
     let out = std::process::Command::new("curl")
         .args([
@@ -232,6 +255,25 @@ mod tests {
     fn parse_accepts_valid_body() {
         let body = r#"{"usage":{"monthly":{"percent":12.5},"weekly":{"percent":null},"rolling":{"percent":3.1}}}"#;
         assert!(parse(body).is_some());
+    }
+
+    #[test]
+    fn key_from_auth_reads_go_entry() {
+        assert_eq!(
+            key_from_auth(r#"{"opencode-go":{"type":"api","key":"sk-x"}}"#).as_deref(),
+            Some("sk-x")
+        );
+    }
+
+    #[test]
+    fn key_from_auth_none_when_entry_missing() {
+        assert!(key_from_auth(r#"{"openai":{"key":"sk-x"}}"#).is_none());
+        assert!(key_from_auth("not json").is_none());
+    }
+
+    #[test]
+    fn key_from_auth_ignores_blank_key() {
+        assert!(key_from_auth(r#"{"opencode-go":{"key":"  "}}"#).is_none());
     }
 
     #[test]
